@@ -45,4 +45,4 @@ def run_pipeline(video_path):
     vl.close_video(cap)
 
 if __name__ == "__main__":
-    run_pipeline("videos/Video1_HW10.mp4")
+    run_pipeline("videos/tello_drone_video.mp4")
