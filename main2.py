@@ -90,6 +90,6 @@ def run_pipeline(video_path, image_path, max_distance, min_matches):
 if __name__ == "__main__":
     image_path = "videos/tello.jpg"
     video_path = "videos/TelloVideo3.mp4"
-    run_pipeline(video_path, image_path, 80, 12)
+    run_pipeline(video_path, image_path, 80, 13)
 
 

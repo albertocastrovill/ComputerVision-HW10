@@ -20,50 +20,65 @@ def run_pipeline(video_path, image_path, max_distance, min_matches):
     ref_kp, ref_desc = lo.detect_and_compute(orb, ref_image)
 
     last_centroid = None
-    centroid_history = []  # For smoothing
-    frames_since_last_update = 0
-    history_length = 5  # Number of past centroids to consider for smoothing
+    centroid_history = []  # History to smooth centroid movement
+    history_length = 10  # Number of past centroids to consider for smoothing
+    last_position = None
+    left_count = 0
+    right_count = 0
+    last_change_time = 0
+    min_time_between_changes = 1000  # Min time between changes in milliseconds
+    initial_position_counted = False
 
     while True:
         frame = vl.read_frame(cap)
         if frame is None:
             break
 
-        # Draw vertical line in the middle of the frame
         vertical_frame = vcl.draw_vertical_line(frame.copy())
+        mid_line_x = frame.shape[1] // 2
 
         frame_kp, frame_desc = lo.detect_and_compute(orb, vertical_frame)
         matches = lo.match_features(ref_desc, frame_desc)
 
+        current_time = cv2.getTickCount() / cv2.getTickFrequency() * 1000  # Current time in milliseconds
+
         if len(matches) > min_matches:
             current_centroid = lo.compute_centroid(frame_kp, matches)
             if current_centroid is not None:
-                if last_centroid is not None:
-                    distance = np.linalg.norm(np.array(current_centroid) - np.array(last_centroid))
-                    if distance < max_distance:
-                        centroid_history.append(current_centroid)
-                        if len(centroid_history) > history_length:
-                            centroid_history.pop(0)
-                        last_centroid = np.mean(centroid_history, axis=0)
-                        frames_since_last_update = 0
-                else:
-                    last_centroid = current_centroid
-                    centroid_history.append(current_centroid)
-                    frames_since_last_update = 0
-        else:
-            frames_since_last_update += 1
+                centroid_history.append(current_centroid)
+                if len(centroid_history) > history_length:
+                    centroid_history.pop(0)
 
-        # Reset centroid if no good updates for too long
-        if frames_since_last_update > 10:
-            last_centroid = None
-            centroid_history.clear()
-            frames_since_last_update = 0
+                smoothed_centroid = np.mean(centroid_history, axis=0) if centroid_history else current_centroid
+                current_position = 'left' if smoothed_centroid[0] < mid_line_x else 'right'
+
+                if not initial_position_counted:
+                    if current_position == 'left':
+                        left_count += 1
+                    else:
+                        right_count += 1
+                    initial_position_counted = True
+
+                if last_centroid is not None and last_position != current_position:
+                    if (current_time - last_change_time > min_time_between_changes):
+                        if current_position == 'left':
+                            left_count += 1
+                        else:
+                            right_count += 1
+                        last_change_time = current_time
+
+                last_centroid = smoothed_centroid
+                last_position = current_position
 
         # Draw centroid and maximum distance circle if exists
         if last_centroid is not None:
             center = (int(last_centroid[0]), int(last_centroid[1]))
             cv2.circle(vertical_frame, center, 5, (255, 0, 0), -1)
             cv2.circle(vertical_frame, center, max_distance, (0, 255, 0), 2)
+
+        # Display counts
+        cv2.putText(vertical_frame, f"Left: {left_count}", (10, vertical_frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+        cv2.putText(vertical_frame, f"Right: {right_count}", (vertical_frame.shape[1] - 200, vertical_frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
         cv2.imshow("Video with Line and Centroid", vertical_frame)
 
@@ -75,7 +90,7 @@ def run_pipeline(video_path, image_path, max_distance, min_matches):
 if __name__ == "__main__":
     image_path = "videos/tello.jpg"
     video_path = "videos/TelloVideo3.mp4"
-    run_pipeline(video_path, image_path, 80, 12)
+    run_pipeline(video_path, image_path, 80, 13)
 
 
 
