@@ -11,8 +11,12 @@ def load_image(image_path):
 
 def initialize_orb(image):
     """Initialize ORB detector and matcher."""
-    orb = cv2.ORB_create(nfeatures=2000, scoreType=cv2.ORB_FAST_SCORE, WTA_K=2, scaleFactor=1.5)
-
+    orb = cv2.ORB_create(nfeatures=2000)
+    orb.setMaxFeatures(2000)
+    #orb.setScoreType(cv2.ORB_FAST_SCORE)
+    #orb.setWTA_K(2)
+    #orb.setScaleFactor(1.9)
+    #orb.setNLevels(8)
     return orb
 
 def detect_and_compute(orb, image):
@@ -29,7 +33,7 @@ def match_features(desc1, desc2):
     for m_n in matches:
         if len(m_n) == 2:  # Asegúrate de que hay dos coincidencias
             m, n = m_n
-            if m.distance < 0.68 * n.distance:
+            if m.distance < 0.75 * n.distance:
                 good_matches.append(m)
     return good_matches
 
