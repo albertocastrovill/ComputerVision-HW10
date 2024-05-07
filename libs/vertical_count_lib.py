@@ -6,14 +6,32 @@ import numpy as np
 
 # Function to draw a vertical line in the middle of the frame
 def draw_vertical_line(vertical_frame):
+    """
+    Function to draw a vertical line in the middle of the frame.
+
+    Args:
+        vertical_frame (numpy.ndarray): The frame to draw the line on.
+
+    Returns:
+        numpy.ndarray: The frame with the vertical line drawn.
+    """
     # Get the dimensions of the frame
     height, width, _ = vertical_frame.shape
     # Draw a vertical line in the middle of the frame
-    cv2.line(vertical_frame, (width//2, 0), (width//2, height), (0, 255, 0), 2)
+    cv2.line(vertical_frame, (width//2, 0), (width//2, height), (0, 255, 255), 2)
     return vertical_frame
 
-# Function to count the number of times the person is on the left side of the frame
+# Function to count the number of times the object is on the left side of the frame
 def count_left_side(vertical_frame):
+    """
+    Function to count the number of times the object is on the left side of the frame.
+
+    Args:
+        vertical_frame (numpy.ndarray): The frame to count the left side.
+
+    Returns:
+        int: The number of times the object is on the left side.
+    """
     # Get the dimensions of the frame
     height, width, _ = vertical_frame.shape
     # Get the left side of the frame
@@ -28,8 +46,17 @@ def count_left_side(vertical_frame):
     count = len(contours)
     return count
 
-#Function to count the number of times the person is on the right side of the frame
+#Function to count the number of times the object is on the right side of the frame
 def count_right_side(vertical_frame):
+    """
+    Function to count the number of times the object is on the right side of the frame.
+
+    Args:
+        vertical_frame (numpy.ndarray): The frame to count the right side.
+
+    Returns:
+        int: The number of times the object is on the right side.
+    """
     # Get the dimensions of the frame
     height, width, _ = vertical_frame.shape
     # Get the right side of the frame
@@ -44,7 +71,5 @@ def count_right_side(vertical_frame):
     count = len(contours)
     return count
 
-def vertical_line_cout(vertical_frame):
-    draw_vertical_line(vertical_frame)
 
     

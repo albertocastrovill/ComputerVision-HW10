@@ -1,3 +1,18 @@
+"""
+This code is the main pipeline for the project. It reads a video file and an image file, and detects the position of the
+drone in the video. It uses ORB feature detection and matching to detect the image in the video frames, and then uses the
+centroid of the matched points to determine the position of the drone. The code also counts the number of times the drone
+crosses a vertical line in the video, and displays the count on the video frames.
+
+Author: Alberto Castro
+Date: 06/04/2024
+
+Usage:
+    python3 main.py
+
+"""
+
+# Import necessary libraries
 import os
 import cv2
 import numpy as np
@@ -5,7 +20,21 @@ import libs.video_lib as vl
 import libs.vertical_count_lib as vcl
 import libs.orb_detection as lo
 
+
 def run_pipeline(video_path, image_path, max_distance, min_matches):
+    """
+    Run the main pipeline for the project.
+
+    Args:
+        video_path (str): Path to the video file.
+        image_path (str): Path to the image file.
+        max_distance (int): Maximum distance between matched points to consider a valid match.
+        min_matches (int): Minimum number of matches required to consider the image detected.
+
+    Returns:
+        None
+    """
+    
     cap = vl.open_video(video_path)
     if cap is None:
         print("Failed to open video.")

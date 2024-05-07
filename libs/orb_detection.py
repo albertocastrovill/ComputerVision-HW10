@@ -37,13 +37,6 @@ def match_features(desc1, desc2):
                 good_matches.append(m)
     return good_matches
 
-"""
-def draw_matches2(img1, kp1, img2, kp2, matches):
-    #Draw matches between two images.
-    result = cv2.drawMatches(img1, kp1, img2, kp2, matches, None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
-    return result
-"""
-
 def draw_matches(img1, kp1, img2, kp2, matches, centroid, max_distance):
     """Draw matches and the centroid area of interest."""
     # Dibujar las coincidencias
@@ -60,8 +53,6 @@ def draw_matches(img1, kp1, img2, kp2, matches, centroid, max_distance):
         cv2.circle(output_image, centroid, max_distance, (0, 255, 0), 2)  # Círculo verde para el área de interés
 
     return output_image
-
-
 
 def compute_centroid(keypoints, matches):
     """Compute the centroid of matched keypoints."""
